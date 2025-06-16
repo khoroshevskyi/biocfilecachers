@@ -1,7 +1,7 @@
 pub mod models;
 pub mod schema;
 
-use biocrs::interactions::*;
+use biocrs::biocache::*;
 
 fn main() {
     println!("Hello, world!");
