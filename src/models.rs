@@ -1,6 +1,6 @@
-use diesel::prelude::*;
 use crate::schema::resource;
 use chrono::NaiveDateTime;
+use diesel::prelude::*;
 
 #[derive(Queryable, Selectable, Debug)]
 #[diesel(table_name = resource)]
@@ -30,5 +30,3 @@ pub struct NewResource<'a> {
     pub etag: Option<&'a str>,
     pub expires: Option<NaiveDateTime>,
 }
-
-

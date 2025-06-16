@@ -1,15 +1,14 @@
-use diesel::prelude::*;
 use anyhow::Result;
+use diesel::prelude::*;
 
-use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
+use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
 use dotenvy::dotenv;
 use std::env;
 
-use crate::models::{Resource, NewResource};
+use crate::models::{NewResource, Resource};
 use crate::schema::resource;
-
 
 pub fn establish_connection() -> SqliteConnection {
     dotenv().ok();
@@ -20,7 +19,6 @@ pub fn establish_connection() -> SqliteConnection {
 }
 
 pub fn run_migrations(connection: &mut SqliteConnection) -> Result<()> {
-
     // This will run the necessary migrations.
     //
     // See the documentation for `MigrationHarness` for
@@ -31,7 +29,6 @@ pub fn run_migrations(connection: &mut SqliteConnection) -> Result<()> {
 }
 
 pub fn create_post(conn: &mut SqliteConnection, id_name: &str, text: &str, path: &str) -> Resource {
-
     let new_post = NewResource {
         rid: id_name,
         rname: text,
@@ -50,10 +47,9 @@ pub fn create_post(conn: &mut SqliteConnection, id_name: &str, text: &str, path:
 }
 
 pub fn show_posts(conn: &mut SqliteConnection) -> () {
-
     use crate::schema::resource::dsl::*;
 
-        let results = resource
+    let results = resource
         // .filter(published.eq(true))
         .limit(25)
         .select(Resource::as_select())
@@ -68,6 +64,5 @@ pub fn show_posts(conn: &mut SqliteConnection) -> () {
         println!("{}", resources.rname);
         println!("{}", resources.fpath.unwrap_or_else(|| "".to_string()));
         println!("{}", resources.rpath);
-
     }
 }

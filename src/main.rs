@@ -4,7 +4,6 @@ pub mod schema;
 use biocrs::interactions::*;
 
 fn main() {
-
     println!("Hello, world!");
 
     let mut conn = establish_connection();
@@ -14,6 +13,4 @@ fn main() {
 
     // coment create_post(&mut conn, "fsdsa", "body_qf23", "this/is/my.path.txt");
     show_posts(&mut conn);
-
-
 }
