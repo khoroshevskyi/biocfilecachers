@@ -1,8 +1,8 @@
 use anyhow::Result;
+use chrono::NaiveDateTime;
 use diesel::prelude::*;
-use std::ops::Deref;
-
 use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
+use std::ops::Deref;
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
 use crate::models::{NewResource, Resource};
@@ -93,12 +93,98 @@ impl BioCache {
             .filter(rname.eq(rname1))
             .load(&mut self.connection)
             .expect("Error in result list");
-        println!("{:?}", result.first());
 
         let result1 = result.first();
-        return match result1 {
+        match result1 {
             Some(res) => Some(res.clone()),
             None => None,
-        };
+        }
+    }
+
+    // Add a resource to the cache.
+    //
+    //         Args:
+    //             rname:
+    //                 Name to identify the resource in cache.
+    //
+    //             fpath:
+    //                 Path to the source file.
+    //
+    //             rtype:
+    //                 Type of resource.
+    //                 One of ``local``, ``web``, or ``relative``.
+    //                 Defaults to ``local``.
+    //
+    //             action:
+    //                 How to handle the file ("copy", "move", or "asis").
+    //                 Defaults to ``copy``.
+    //
+    //             tags:
+    //                 Optional list of tags for categorization.
+    //
+    //             expires:
+    //                 Optional expiration datetime.
+    //                 If None, resource never expires.
+    //
+    //             ext:
+    //                 Whether to use filepath extension when storing in cache.
+    //                 Defaults to `False`.
+    //
+    //         Returns:
+    //             The `Resource` object added to the cache.
+    pub fn add(
+        &mut self,
+        rname: &str,
+        fpath: &str,
+        rtype: &str,
+        action: &str,
+        tags: Option(Vec(&str)),
+        expires: Option<NaiveDateTime>,
+        ext: bool,
+    ) -> () {
+    }
+
+    pub fn add_batch() -> () {
+        println!("Not implemented yet");
+    }
+
+    pub fn remove(&mut self) -> () {
+        println!("Not implemented yet");
+    }
+
+    pub fn update(&mut self, rname: &str) -> () {
+        println!("Not implemented yet");
+    }
+
+    pub fn list_resources(&mut self) -> () {
+        println!("Not implemented yet");
+    }
+
+    pub fn get_cache_size(&mut self) -> () {
+        println!("Not implemented yet");
+    }
+
+    pub fn export_metadata(&mut self) -> () {
+        println!("Not implemented yet");
+    }
+
+    pub fn import_metadata(&mut self) -> () {
+        println!("Not implemented yet");
+    }
+
+    pub fn verify_cache(&mut self) -> () {
+        println!("Not implemented yet");
+    }
+
+    pub fn search(&mut self, query: &str) -> () {
+        println!("Not implemented yet");
+    }
+
+    pub fn get_stats(&mut self) -> () {
+        println!("Not implemented yet");
+    }
+
+    pub fn purge(&mut self, force: bool) -> () {
+        println!("Not implemented yet");
     }
 }

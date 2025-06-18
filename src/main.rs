@@ -15,7 +15,8 @@ fn main() {
 
     // bcache.show_posts();
 
-    bcache.get("74862af4cba96c99e73d2a062b6389af");
+    let result = bcache.get("74862af4cba96c99e73d2a062b6389af");
+    println!("{:?}", result);
     // let mut conn = establish_connection(&database_url);
     //
     // println!("Hello, world 2!");
