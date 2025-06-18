@@ -1,7 +1,11 @@
+pub mod biocache;
+pub mod common;
 pub mod models;
 pub mod schema;
 
-use biocrs::biocache::*;
+use crate::biocache::*;
+use crate::models::{NewResource, Resource};
+use common::*;
 use dotenvy::dotenv;
 use std::env;
 
@@ -13,15 +17,16 @@ fn main() {
 
     let mut bcache = BioCache::new(&database_url);
 
-    // bcache.show_posts();
+    // let new_resource = NewResource::new("unique_name1", "path/1.txt", None, None, None, None);
+    //
+    // bcache.add(new_resource);
 
-    let result = bcache.get("74862af4cba96c99e73d2a062b6389af");
-    println!("{:?}", result);
-    // let mut conn = establish_connection(&database_url);
-    //
-    // println!("Hello, world 2!");
-    // let _ = run_migrations(&mut conn);
-    //
-    // // coment create_post(&mut conn, "fsdsa", "body_qf23", "this/is/my.path.txt");
-    // show_posts(&mut conn);
+    // bcache.show_resources();
+
+    // let result = bcache.get("unique_name1");
+    // println!("{:?}", result);
+
+    let results: Vec<Resource> = bcache.list_resources(None);
+    print_resources(results);
+    // bcache.remove("unique_name1");
 }

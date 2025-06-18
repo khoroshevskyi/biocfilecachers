@@ -8,6 +8,7 @@ anyhow = "1.0.82"
 diesel = { version = "2.2.0", features = ["chrono", "postgres", "default", "sqlite", "returning_clauses_for_sqlite_3_35"] }
 diesel_migrations = {version = "2.2.0"}
 chrono = {version = "0.4.41"}
+uuid = {version = "1.17.0", features = ["v4"]}
 
 # build libpq and openssl as part of the build process
 # uncomment these lines if you run into setup issues
@@ -15,3 +16,4 @@ pq-sys = { version = "0.6", features = ["bundled"] }
 # openssl-sys = { version = "0.9.100", features = ["vendored"] }
 dotenvy = "0.15"
 regex = "1.11.1"
+tabled = "0.20.0"

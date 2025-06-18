@@ -27,16 +27,8 @@ pub fn run_migrations(connection: &mut SqliteConnection) -> Result<()> {
     Ok(())
 }
 
-pub fn create_post(conn: &mut SqliteConnection, id_name: &str, text: &str, path: &str) -> Resource {
-    let new_post = NewResource {
-        rid: id_name,
-        rname: text,
-        fpath: None,
-        etag: None,
-        expires: None,
-        rpath: path,
-        rtype: None,
-    };
+pub fn create_post(conn: &mut SqliteConnection, text: String, path: &str) -> Resource {
+    let new_post = NewResource::new(&text, &path, None, None, None, None);
 
     diesel::insert_into(resource::table)
         .values(&new_post)
@@ -44,8 +36,6 @@ pub fn create_post(conn: &mut SqliteConnection, id_name: &str, text: &str, path:
         .get_result(conn)
         .expect("Error saving new resource")
 }
-
-pub fn show_posts(conn: &mut SqliteConnection) -> () {}
 
 pub struct BioCache {
     pub connection: SqliteConnection,
@@ -60,37 +50,13 @@ impl BioCache {
         BioCache { connection }
     }
 
-    pub fn show_posts(&mut self) -> () {
-        use crate::schema::resource::dsl::*;
-
-        let results = resource
-            // .filter(published.eq(true))
-            .limit(25)
-            .select(Resource::as_select())
-            .load(&mut self.connection)
-            .expect("Error loading posts");
-
-        println!("Displaying {} posts", results.len());
-        for resources in results {
-            println!("id {}", resources.id);
-            println!("-----------\n");
-            println!("rid {}", resources.rid);
-            println!("rname {}", resources.rname);
-            println!(
-                "fpath {}",
-                resources.fpath.unwrap_or_else(|| "".to_string())
-            );
-            println!("rpath{}", resources.rpath);
-        }
-    }
-
-    pub fn get(&mut self, rname1: &str) -> Option<Resource> {
+    pub fn get(&mut self, name: &str) -> Option<Resource> {
         use crate::schema::resource::dsl::*;
 
         let result = resource
             .select(Resource::as_select())
             .limit(1)
-            .filter(rname.eq(rname1))
+            .filter(rname.eq(name))
             .load(&mut self.connection)
             .expect("Error in result list");
 
@@ -101,66 +67,74 @@ impl BioCache {
         }
     }
 
-    // Add a resource to the cache.
-    //
-    //         Args:
-    //             rname:
-    //                 Name to identify the resource in cache.
-    //
-    //             fpath:
-    //                 Path to the source file.
-    //
-    //             rtype:
-    //                 Type of resource.
-    //                 One of ``local``, ``web``, or ``relative``.
-    //                 Defaults to ``local``.
-    //
-    //             action:
-    //                 How to handle the file ("copy", "move", or "asis").
-    //                 Defaults to ``copy``.
-    //
-    //             tags:
-    //                 Optional list of tags for categorization.
-    //
-    //             expires:
-    //                 Optional expiration datetime.
-    //                 If None, resource never expires.
-    //
-    //             ext:
-    //                 Whether to use filepath extension when storing in cache.
-    //                 Defaults to `False`.
-    //
-    //         Returns:
-    //             The `Resource` object added to the cache.
-    pub fn add(
-        &mut self,
-        rname: &str,
-        fpath: &str,
-        rtype: &str,
-        action: &str,
-        tags: Option(Vec(&str)),
-        expires: Option<NaiveDateTime>,
-        ext: bool,
-    ) -> () {
+    /// Add a resource to the cache.
+    ///
+    ///         Args:
+    ///             rname:
+    ///                 Name to identify the resource in cache.
+    ///
+    ///             fpath:
+    ///                 Path to the source file.
+    ///
+    ///             rtype:
+    ///                 Type of resource.
+    ///                 One of ``local``, ``web``, or ``relative``.
+    ///                 Defaults to ``local``.
+    ///
+    ///             action:
+    ///                 How to handle the file ("copy", "move", or "asis").
+    ///                 Defaults to ``copy``.
+    ///
+    ///             tags:
+    ///                 Optional list of tags for categorization.
+    ///
+    ///             expires:
+    ///                 Optional expiration datetime.
+    ///                 If None, resource never expires.
+    ///
+    ///             ext:
+    ///                 Whether to use filepath extension when storing in cache.
+    ///                 Defaults to `False`.
+    ///
+    ///         Returns:
+    ///             The `Resource` object added to the cache.
+    pub fn add(&mut self, new_resource: NewResource) -> () {
+        diesel::insert_into(resource::table)
+            .values(&new_resource)
+            .returning(Resource::as_returning())
+            .get_result(&mut self.connection)
+            .expect("Error saving new resource");
+    }
+
+    pub fn remove(&mut self, name: &str) -> () {
+        use crate::schema::resource::dsl::*;
+
+        diesel::delete(resource.filter(rname.eq(name)))
+            .execute(&mut self.connection)
+            .expect("Error deleting posts");
+    }
+
+    pub fn list_resources(&mut self, limit: Option<i64>) -> Vec<Resource> {
+        use crate::schema::resource::dsl::*;
+
+        let limit: i64 = match limit {
+            Some(limit) => limit,
+            None => 25,
+        };
+
+        let results: Vec<Resource> = resource
+            .limit(limit)
+            .select(Resource::as_select())
+            .load(&mut self.connection)
+            .expect("Error loading posts");
+        results
+    }
+
+    pub fn update(&mut self) -> () {
+        println!("Not implemented yet");
     }
 
     pub fn add_batch() -> () {
-        println!("Not implemented yet");
-    }
-
-    pub fn remove(&mut self) -> () {
-        println!("Not implemented yet");
-    }
-
-    pub fn update(&mut self, rname: &str) -> () {
-        println!("Not implemented yet");
-    }
-
-    pub fn list_resources(&mut self) -> () {
-        println!("Not implemented yet");
-    }
-
-    pub fn get_cache_size(&mut self) -> () {
         println!("Not implemented yet");
     }
 
