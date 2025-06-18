@@ -2,7 +2,7 @@ use crate::schema::resource;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 
-#[derive(Queryable, Selectable, Debug)]
+#[derive(Clone, Queryable, Selectable, Debug)]
 #[diesel(table_name = resource)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Resource {
