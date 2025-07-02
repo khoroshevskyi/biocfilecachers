@@ -1,4 +1,5 @@
 use anyhow::Result;
+use std::path::{Path, PathBuf};
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
@@ -43,8 +44,15 @@ pub struct BioCache {
 }
 
 impl BioCache {
-    pub fn new(cache_dir: &str) -> Self {
-        let mut connection: SqliteConnection = establish_connection(cache_dir);
+    /// Establish connection with database.
+    ///
+    /// # Arguments:
+    /// - cache_dir: path to the directory where cache should be stored
+    pub fn new(cache_dir: &Path) -> Self {
+
+        let mut url_path: PathBuf = cache_dir.to_path_buf();
+        url_path = url_path.join("BiocFileCache.sqlite");
+        let mut connection: SqliteConnection = establish_connection(url_path.to_str().unwrap());
         let _ = run_migrations(&mut connection);
 
         BioCache { connection }
@@ -69,38 +77,12 @@ impl BioCache {
 
     /// Add a resource to the cache.
     ///
-    ///         Args:
-    ///             rname:
-    ///                 Name to identify the resource in cache.
+    /// # Arguments:
+    /// - new_resource: New Resource object from models module
     ///
-    ///             fpath:
-    ///                 Path to the source file.
-    ///
-    ///             rtype:
-    ///                 Type of resource.
-    ///                 One of ``local``, ``web``, or ``relative``.
-    ///                 Defaults to ``local``.
-    ///
-    ///             action:
-    ///                 How to handle the file ("copy", "move", or "asis").
-    ///                 Defaults to ``copy``.
-    ///
-    ///             tags:
-    ///                 Optional list of tags for categorization.
-    ///
-    ///             expires:
-    ///                 Optional expiration datetime.
-    ///                 If None, resource never expires.
-    ///
-    ///             ext:
-    ///                 Whether to use filepath extension when storing in cache.
-    ///                 Defaults to `False`.
-    ///
-    ///         Returns:
-    ///             The `Resource` object added to the cache.
-    pub fn add(&mut self, new_resource: NewResource) -> () {
+    pub fn add(&mut self, new_resource: &NewResource) -> () {
         diesel::insert_into(resource::table)
-            .values(&new_resource)
+            .values(new_resource)
             .returning(Resource::as_returning())
             .get_result(&mut self.connection)
             .expect("Error saving new resource");
@@ -160,5 +142,46 @@ impl BioCache {
 
     pub fn purge(&mut self, force: bool) -> () {
         println!("Not implemented yet");
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_create_cache_file() {
+        let tempdir = tempfile::tempdir().unwrap();
+        let mut new_file_path = tempdir.keep();
+
+        let _ = BioCache::new(&new_file_path);
+
+        new_file_path.push("BiocFileCache.sqlite");
+        assert!(new_file_path.exists());
+    }
+
+    #[test]
+    fn test_add_retrieve() {
+        let tempdir = tempfile::tempdir().unwrap();
+        let new_file_path = tempdir.keep();
+
+        let mut bcache: BioCache =  BioCache::new(&new_file_path);
+
+        let new_recourse = crate::models::NewResource::new(
+            "recourse_name1",
+            "comp/path/to/recourse_name1",
+            None,
+            None,
+            None,
+            None,
+        );
+
+        bcache.add(&new_recourse);
+
+        let cached_resource = bcache.get("recourse_name1");
+
+        assert_eq!(&new_recourse.rpath, &cached_resource.unwrap().rpath);
+
     }
 }

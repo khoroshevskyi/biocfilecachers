@@ -20,6 +20,7 @@ pub struct Resource {
     pub expires: Option<NaiveDateTime>,
 }
 
+#[derive(Clone)]
 #[derive(Insertable)]
 #[diesel(table_name = resource)]
 pub struct NewResource<'a> {

@@ -8,6 +8,7 @@ use crate::models::{NewResource, Resource};
 use common::*;
 use dotenvy::dotenv;
 use std::env;
+use std::path::Path;
 
 fn main() {
     println!("Hello, world!");
@@ -15,7 +16,9 @@ fn main() {
 
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
-    let mut bcache = BioCache::new(&database_url);
+    let database_path: &Path = Path::new(database_url.as_str());
+
+    let mut bcache = BioCache::new(database_path);
 
     // let new_resource = NewResource::new("unique_name1", "path/1.txt", None, None, None, None);
     //
@@ -26,7 +29,7 @@ fn main() {
     // let result = bcache.get("unique_name1");
     // println!("{:?}", result);
 
-    let results: Vec<Resource> = bcache.list_resources(None);
+    let results: Vec<Resource> = bcache.list_resources(Some(70 as i64));
     print_resources(results);
     // bcache.remove("unique_name1");
 }
