@@ -20,8 +20,7 @@ pub struct Resource {
     pub expires: Option<NaiveDateTime>,
 }
 
-#[derive(Clone)]
-#[derive(Insertable)]
+#[derive(Clone, Insertable)]
 #[diesel(table_name = resource)]
 pub struct NewResource<'a> {
     pub rid: String,
@@ -34,10 +33,7 @@ pub struct NewResource<'a> {
 }
 
 impl<'a> NewResource<'a> {
-    pub fn new(
-        rname: &'a str,
-        rpath: &'a str,
-    ) -> Self {
+    pub fn new(rname: &'a str, rpath: &'a str) -> Self {
         NewResource {
             rid: generate_id(),
             rname,

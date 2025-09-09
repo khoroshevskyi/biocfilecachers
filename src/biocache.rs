@@ -1,13 +1,12 @@
 use anyhow::Result;
-use std::path::{Path, PathBuf};
 use diesel::prelude::*;
-use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
-use std::ops::Deref;
+use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
+// use std::ops::{Deref};
+use std::path::{Path, PathBuf};
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
 use crate::models::{NewResource, Resource};
 use crate::schema::resource;
-// use crate::cache_config::{CacheConfig};  // not used now
 
 /// Establish connection with database.
 ///
@@ -54,7 +53,6 @@ impl BioCache {
     /// # Returns
     /// Biocache object
     pub fn new(cache_dir: &Path) -> Self {
-
         let mut url_path: PathBuf = cache_dir.to_path_buf();
         url_path = url_path.join("BiocFileCache.sqlite");
         let mut connection: SqliteConnection = establish_connection(url_path.to_str().unwrap());
@@ -152,7 +150,6 @@ impl BioCache {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -173,18 +170,15 @@ mod tests {
         let tempdir = tempfile::tempdir().unwrap();
         let new_file_path = tempdir.keep();
 
-        let mut bcache: BioCache =  BioCache::new(&new_file_path);
+        let mut bcache: BioCache = BioCache::new(&new_file_path);
 
-        let mut new_recourse = crate::models::NewResource::new(
-            "recourse_name1",
-            "comp/path/to/recourse_name1",
-        ).set_fpath("comp/path/to/recourse_name1");
+        let new_recourse = NewResource::new("recourse_name1", "comp/path/to/recourse_name1")
+            .set_fpath("comp/path/to/recourse_name1");
 
         bcache.add(&new_recourse);
 
         let cached_resource = bcache.get("recourse_name1");
 
         assert_eq!(&new_recourse.rpath, &cached_resource.unwrap().rpath);
-
     }
 }

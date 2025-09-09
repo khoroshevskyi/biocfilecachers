@@ -4,7 +4,7 @@ pub mod models;
 pub mod schema;
 
 use crate::biocache::*;
-use crate::models::{Resource};
+use crate::models::Resource;
 use common::*;
 use dotenvy::dotenv;
 use std::env;
