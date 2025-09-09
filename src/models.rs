@@ -49,19 +49,19 @@ impl<'a> NewResource<'a> {
         }
     }
 
-    pub fn set_fpath(&mut self, fpath: &'a str) -> &mut Self {
+    pub fn set_fpath(mut self, fpath: &'a str) -> Self {
         self.fpath = Some(fpath);
         self
     }
-    pub fn set_etag(&mut self, etag: &'a str) -> &mut Self {
+    pub fn set_etag(mut self, etag: &'a str) -> Self {
         self.etag = Some(etag);
         self
     }
-    pub fn set_expires(&mut self, expires: NaiveDateTime) -> &mut Self {
+    pub fn set_expires(mut self, expires: NaiveDateTime) -> Self {
         self.expires = Some(expires);
         self
     }
-    pub fn set_rtype(&mut self, rtype: &'a str) -> &mut Self {
+    pub fn set_rtype(mut self, rtype: &'a str) -> Self {
         self.rtype = Some(rtype);
         self
     }

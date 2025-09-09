@@ -178,8 +178,7 @@ mod tests {
         let mut new_recourse = crate::models::NewResource::new(
             "recourse_name1",
             "comp/path/to/recourse_name1",
-        );
-        new_recourse.set_fpath("comp/path/to/recourse_name1");
+        ).set_fpath("comp/path/to/recourse_name1");
 
         bcache.add(&new_recourse);
 
