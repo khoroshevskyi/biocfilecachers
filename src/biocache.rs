@@ -1,6 +1,5 @@
 use anyhow::Result;
 use std::path::{Path, PathBuf};
-use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
 use std::ops::Deref;
@@ -14,6 +13,8 @@ use crate::schema::resource;
 ///
 /// # Arguments:
 /// - database_url: database url path
+///
+///
 pub fn establish_connection(database_url: &str) -> SqliteConnection {
     SqliteConnection::establish(&database_url)
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
@@ -23,13 +24,14 @@ pub fn establish_connection(database_url: &str) -> SqliteConnection {
 ///
 /// # Arguments:
 /// - connection: diesel connection to the database
+///
 pub fn run_migrations(connection: &mut SqliteConnection) -> Result<()> {
     let _ = connection.run_pending_migrations(MIGRATIONS);
     Ok(())
 }
 
 pub fn create_post(conn: &mut SqliteConnection, text: String, path: &str) -> Resource {
-    let new_post = NewResource::new(&text, &path, None, None, None, None);
+    let new_post = NewResource::new(&text, &path);
 
     diesel::insert_into(resource::table)
         .values(&new_post)
@@ -48,6 +50,9 @@ impl BioCache {
     ///
     /// # Arguments:
     /// - cache_dir: path to the directory where cache should be stored
+    ///
+    /// # Returns
+    /// Biocache object
     pub fn new(cache_dir: &Path) -> Self {
 
         let mut url_path: PathBuf = cache_dir.to_path_buf();
@@ -133,6 +138,7 @@ impl BioCache {
     }
 
     pub fn search(&mut self, query: &str) -> () {
+        println!("{}", query);
         println!("Not implemented yet");
     }
 
@@ -141,6 +147,7 @@ impl BioCache {
     }
 
     pub fn purge(&mut self, force: bool) -> () {
+        println!("{}", force);
         println!("Not implemented yet");
     }
 }
@@ -168,14 +175,11 @@ mod tests {
 
         let mut bcache: BioCache =  BioCache::new(&new_file_path);
 
-        let new_recourse = crate::models::NewResource::new(
+        let mut new_recourse = crate::models::NewResource::new(
             "recourse_name1",
             "comp/path/to/recourse_name1",
-            None,
-            None,
-            None,
-            None,
         );
+        new_recourse.set_fpath("comp/path/to/recourse_name1");
 
         bcache.add(&new_recourse);
 

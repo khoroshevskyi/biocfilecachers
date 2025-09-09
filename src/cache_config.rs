@@ -1,6 +1,6 @@
 use chrono::NaiveDateTime;
 use regex::Regex;
-use std::path::{Path, PathBuf};
+use std::path::{Path};
 
 pub struct CacheConfig<'a> {
     cache_dir: &'a Path,

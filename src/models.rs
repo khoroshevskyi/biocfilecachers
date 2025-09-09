@@ -37,19 +37,28 @@ impl<'a> NewResource<'a> {
     pub fn new(
         rname: &'a str,
         rpath: &'a str,
-        fpath: Option<&'a str>,
-        rtype: Option<&'a str>,
-        etag: Option<&'a str>,
-        expires: Option<NaiveDateTime>,
     ) -> Self {
         NewResource {
             rid: generate_id(),
             rname,
             rpath,
-            fpath,
-            rtype,
-            etag,
-            expires,
+            rtype: None,
+            fpath: None,
+            etag: None,
+            expires: None,
         }
+    }
+
+    pub fn set_fpath(&mut self, fpath: &'a str) {
+        self.fpath = Some(fpath);
+    }
+    pub fn set_etag(&mut self, etag: &'a str) {
+        self.etag = Some(etag);
+    }
+    pub fn set_expires(&mut self, expires: NaiveDateTime) {
+        self.expires = Some(expires);
+    }
+    pub fn set_rtype(&mut self, rtype: &'a str) {
+        self.rtype = Some(rtype);
     }
 }

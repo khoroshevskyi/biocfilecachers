@@ -4,7 +4,7 @@ pub mod models;
 pub mod schema;
 
 use crate::biocache::*;
-use crate::models::{NewResource, Resource};
+use crate::models::{Resource};
 use common::*;
 use dotenvy::dotenv;
 use std::env;
@@ -29,7 +29,7 @@ fn main() {
     // let result = bcache.get("unique_name1");
     // println!("{:?}", result);
 
-    let results: Vec<Resource> = bcache.list_resources(Some(70 as i64));
+    let results: Vec<Resource> = bcache.list_resources(Some(50 as i64));
     print_resources(results);
     // bcache.remove("unique_name1");
 }
