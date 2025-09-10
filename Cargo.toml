@@ -2,6 +2,9 @@
 name = "biocrs"
 version = "0.1.0"
 edition = "2021"
+description = "The original version of caching files is implemented in R as a part of Bioconductor project: https://www.bioconductor.org/packages/release/bioc/html/BiocFileCache.html"
+license = "MIT"
+readme = "README.md"
 
 [dependencies]
 anyhow = "1.0.82"
